@@ -1,4 +1,4 @@
-# S2 CustomerProductSearch
+# S2 CustomerProductsSearch
 
 ## Installation
 *This installation is for Sublime Text 3 and NOT tested under Sublime Text 2!*
@@ -12,13 +12,11 @@
 
 ## Usage
 
-~~Remember that the SOAP log needs to end WITHOUT a quotation mark (")!!~~
-Fixed :)
-
 - Variant A
   - Press CTRL + K and then CTRL + X
 - Variant B
   - Use Find -> Find Customer by Product
+
 
 - Enter the wanted product and hit enter, the window will auto refresh and save automatically
 
