@@ -1,5 +1,4 @@
-# Written by Enrico
-
+# Written by Enrico & Tim Brust
 
 import sublime
 import sublime_plugin
@@ -9,53 +8,46 @@ import os
 import copy
 import functools
 
-
-#SEARCHFILE = sublime.packages_path() + os.path.sep + "CustomerProductSearch" + os.path.sep + "customer_product_search.tmp"
+SEARCHFILE = sublime.packages_path() + os.path.sep + "User" + os.path.sep + "customer_product_search.tmp"
 CUSTOMER_PRODUCT_HASH_FILE = os.path.sep + "db" + os.path.sep + "customer_product_hash.json"
 
 class CustomerProductSearchCommand(sublime_plugin.WindowCommand):
 
-    output_view = ""
     data_map = ""
     customer_products = {}
     user_with_not_products_array = []
 
     def run(self):
-        #oeffne suchfile in neuem View
-        self.output_view = self.window.new_file()
+        # Öffne SEARCHFILE in neuem View
+        self.output_view = self.window.open_file(SEARCHFILE)
 
         # Focus
         self.window.focus_view(self.output_view)
 
         try:
             customer_product_hash_file = ""
-            #suche die json Datei
+            # Suche die json Datei
             for folder in self.window.folders():
                 if os.path.exists(folder+CUSTOMER_PRODUCT_HASH_FILE):
                     customer_product_hash_file = folder+CUSTOMER_PRODUCT_HASH_FILE
             f = open(customer_product_hash_file)
-            #json laden
+            # json laden
             self.data_map = json.load(f)
             f.close()
-            #self.save_view()
-            #tabname
-            self.output_view.set_name("test")
-            #sucheingabe einblenden
+            # Sucheingabe einblenden
             self.output_view.window().show_input_panel('Search Product', '', self.on_done, None, self.on_cancel)
         except:
-            # Fehler beim oeffnen der json Datei
-            raise
+            # Fehler beim öffnen der json Datei
             self.output_view.window().run_command("append", {"characters" : 'Fehler beim oeffnen, der "db/customer_product_hash.json",\nSelfcare Rake Task "rake db:import:build_customer_products_hash" benutzen um eine neue Datei zu erzeugen.'})
 
-
     def show_results(self, results):
-        #enumerate liefert ein counter
+        # Enumerate liefert einen Counter
         self.output_view.window().run_command("hide_panel")
         for (counter, result) in enumerate(results):
-          #ergebnis anzeige
-          print(result)
+          # Ergebnis Anzeige
           ergebnis = "n" + str(result[0]) + "@wsct.eu | Treffer:" + str(result[1]) + "(" + self.customer_products[str(result[0])] + ")\n"
-          self.output_view.window().run_command("append", {"characters" :  ergebnis})
+          self.output_view.window().run_command("append", {"characters" : ergebnis})
+        self.save_view()
 
     def search(self, dictionary, substr, user_with_not_products_array):
         result = {}
@@ -69,7 +61,12 @@ class CustomerProductSearchCommand(sublime_plugin.WindowCommand):
         return result
 
     def reset_view(self):
-        self.output_view.erase_regions(self.output_view.name())
+        if (self.output_view.file_name()):
+            self.output_view.window().run_command("select_all")
+            self.output_view.window().run_command("left_delete")
+
+    def save_view(self):
+        self.output_view.window().run_command('save')
 
     def get_input_values(self, search_string_array):
         not_products_array = []
@@ -100,7 +97,6 @@ class CustomerProductSearchCommand(sublime_plugin.WindowCommand):
 
     def on_done(self, input):
         self.reset_view()
-        view = self.output_view
         search_string = str(input)
         #eingabe trennen anhand der leerzeichen
         search_string_array = search_string.split(' ')
@@ -143,7 +139,8 @@ class CustomerProductSearchCommand(sublime_plugin.WindowCommand):
         self.show_results(results)
 
     def on_cancel(self):
-        pass
+        self.save_view()
+        self.output_view.window().run_command('close')
 
 
 from operator import itemgetter

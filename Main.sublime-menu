@@ -1,0 +1,12 @@
+[
+    {
+        "id": "find",
+        "children":
+        [
+            {
+                "caption": "Find Customer by Product",
+                "command": "customer_product_search"
+            }
+        ]
+    }
+]
