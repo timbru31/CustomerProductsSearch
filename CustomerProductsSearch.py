@@ -12,7 +12,6 @@ SEARCHFILE = sublime.packages_path() + os.path.sep + "User" + os.path.sep + "cus
 CUSTOMER_PRODUCT_HASH_FILE = os.path.sep + "db" + os.path.sep + "customer_product_hash.json"
 
 class CustomerProductSearchCommand(sublime_plugin.WindowCommand):
-
     data_map = ""
     customer_products = {}
     user_with_not_products_array = []
@@ -135,7 +134,7 @@ class CustomerProductSearchCommand(sublime_plugin.WindowCommand):
             results_dict = {}
             for result in flatten_results:
                 results_dict[result] = flatten_results.count(result)
-            results = Counter(results_dict).most_common(5)
+            results = Counter(results_dict).most_common(20)
         self.show_results(results)
 
     def on_cancel(self):
