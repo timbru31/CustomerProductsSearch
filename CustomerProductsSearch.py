@@ -37,7 +37,10 @@ class CustomerProductSearchCommand(sublime_plugin.WindowCommand):
             self.output_view.window().show_input_panel('Search Product', '', self.on_done, None, self.on_cancel)
         except:
             # Fehler beim öffnen der json Datei
+            self.output_view.window().run_command("hide_panel")
+            self.reset_view()
             self.output_view.window().run_command("append", {"characters" : 'Fehler beim oeffnen, der "db/customer_product_hash.json",\nSelfcare Rake Task "rake db:import:build_customer_products_hash" benutzen um eine neue Datei zu erzeugen.'})
+            self.save_view()
 
     def show_results(self, results):
         # Enumerate liefert einen Counter
