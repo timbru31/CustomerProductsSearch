@@ -22,13 +22,12 @@
   - not --> searches for a user withouht the provided product
   - you can combine both of them ;)
 
+Enter the wanted product and hit enter, the window will auto refresh and save the file automatically.
+
 ## Examples
 
 - 3play and vassecure
 - 3play and basic not basic_hd
-
-
-- Enter the wanted product and hit enter, the window will auto refresh and save automatically
 
 ## Issues? Comments? PR? Support?
 Just create an issue here and I'll take a look at it and try my best to help you out! :)
