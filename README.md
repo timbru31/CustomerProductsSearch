@@ -17,6 +17,16 @@
 - Variant B
   - Use Find -> Find Customer by Product
 
+- You can use the following syntax to perform searches
+  - and --> searches for a user with all the provided products
+  - not --> searches for a user withouht the provided product
+  - you can combine both of them ;)
+
+## Examples
+
+- 3play and vassecure
+- 3play and basic not basic_hd
+
 
 - Enter the wanted product and hit enter, the window will auto refresh and save automatically
 
@@ -24,4 +34,4 @@
 Just create an issue here and I'll take a look at it and try my best to help you out! :)
 
 ## Note
-The tmp file will be created in the #/Packages/User
+The tmp file "customer_product_search.tmp" will be created in the #/Packages/User
