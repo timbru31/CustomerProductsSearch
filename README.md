@@ -33,4 +33,4 @@ Enter the wanted product and hit enter, the window will auto refresh and save th
 Just create an issue here and I'll take a look at it and try my best to help you out! :)
 
 ## Note
-The tmp file "customer_product_search.tmp" will be created in the #/Packages/User
+The tmp file "customer_product_search.tmp" will be created in the #/Packages/User in the Sublime Text 3 config folder.
