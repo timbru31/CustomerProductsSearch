@@ -17,89 +17,58 @@ class CustomerProductSearchCommand(sublime_plugin.WindowCommand):
     user_with_not_products_array = []
 
     def run(self):
-        # Öffne SEARCHFILE in neuem View
-        self.output_view = self.window.open_file(SEARCHFILE)
-
-        # Focus
-        self.window.focus_view(self.output_view)
-
-        try:
-            customer_product_hash_file = ""
-            # Suche die json Datei
-            for folder in self.window.folders():
-                if os.path.exists(folder+CUSTOMER_PRODUCT_HASH_FILE):
-                    customer_product_hash_file = folder+CUSTOMER_PRODUCT_HASH_FILE
+        customer_product_hash_file = ""
+        # Suche die json Datei
+        for folder in self.window.folders():
+            if os.path.exists(folder+CUSTOMER_PRODUCT_HASH_FILE):
+                customer_product_hash_file = folder+CUSTOMER_PRODUCT_HASH_FILE
+            # Zweiter Fall, wir sind im root folder
+            if os.path.exists(folder + os.path.sep + "ume-selfcare" + CUSTOMER_PRODUCT_HASH_FILE):
+                 customer_product_hash_file = folder + os.path.sep + "ume-selfcare" + CUSTOMER_PRODUCT_HASH_FILE
+        if (customer_product_hash_file == ""):
+            # Fehler beim öffnen der json Datei
+            sublime.error_message('Fehler beim Öffnen von "db/customer_product_hash.json"\n\nSelfcare Rake Task\nrake db:import:build_customer_products_hash\n\nbenutzen um eine neue Datei zu erzeugen.')
+        else:
+            # Öffne SEARCHFILE in neuem View
+            self.output_view = self.window.open_file(SEARCHFILE)
+            # Focus
+            self.focus_view()
             f = open(customer_product_hash_file)
             # json laden
             self.data_map = json.load(f)
             f.close()
             # Sucheingabe einblenden
             self.output_view.window().show_input_panel('Search Product', '', self.on_done, None, self.on_cancel)
-        except:
-            # Fehler beim öffnen der json Datei
-            self.output_view.window().run_command("hide_panel")
-            self.reset_view()
-            self.output_view.window().run_command("append", {"characters" : 'Fehler beim oeffnen, der "db/customer_product_hash.json",\nSelfcare Rake Task "rake db:import:build_customer_products_hash" benutzen um eine neue Datei zu erzeugen.'})
-            self.save_view()
-
-    def show_results(self, results):
-        # Enumerate liefert einen Counter
-        self.output_view.window().run_command("hide_panel")
-        for (counter, result) in enumerate(results):
-          # Ergebnis Anzeige
-          ergebnis = "n" + str(result[0]) + "@wsct.eu | Treffer:" + str(result[1]) + "(" + self.customer_products[str(result[0])] + ")\n"
-          self.output_view.window().run_command("append", {"characters" : ergebnis})
-        self.save_view()
-
-    def search(self, dictionary, substr, user_with_not_products_array):
-        result = {}
-        for key , value in dictionary.items():
-            if substr in key:
-                for i in user_with_not_products_array:
-                    if i in value:
-                        value.remove(i)
-                if value:
-                    result [key] = value
-        return result
 
     def reset_view(self):
-        if (self.output_view.file_name()):
-            self.output_view.window().run_command("select_all")
-            self.output_view.window().run_command("left_delete")
+        self.output_view.window().run_command("select_all")
+        self.output_view.window().run_command("left_delete")
+
+    def focus_view(self):
+        self.window.focus_view(self.output_view)
 
     def save_view(self):
         self.output_view.window().run_command('save')
 
-    def get_input_values(self, search_string_array):
-        not_products_array = []
-        next_value_is_not_product = False
-        for (counter, search_value) in enumerate(search_string_array):
-            if not search_value.strip():
-                continue
-            if next_value_is_not_product is True:
-                not_products_array.append(search_value)
-            next_value_is_not_product = False
-            if search_value.upper() == "NOT":
-                next_value_is_not_product = True
-        for i in not_products_array: search_string_array.remove(i)
-        if "NOT" in search_string_array: search_string_array.remove("NOT")
-        if "not" in search_string_array: search_string_array.remove("not")
-        return  list(search_string_array), not_products_array
+    def on_cancel(self):
+        self.save_view()
 
-    def user_with_not_products(self, not_products_array, dictionary):
-        user = []
-        for not_product in not_products_array:
-            for key , value in dictionary.items():
-                if not_product.upper() in key:
-                    user.append(value)
-        if user != []:
-            return functools.reduce(lambda x, y: x+y, user)
-        else:
-            return []
+    def close_view(self):
+        self.output_view.window().run_command('close')
 
     def on_done(self, input):
         self.reset_view()
+        count = 20
         search_string = str(input)
+        if "|" in search_string:
+            length = len(search_string)
+            index = search_string.find("|")
+            new_count = search_string[(index + 1):].strip()
+            search_string = search_string[:-(length - index)]
+            try:
+                count = int(new_count)
+            except:
+                count = 20
         #eingabe trennen anhand der leerzeichen
         search_string_array = search_string.split(' ')
         search_results = []
@@ -119,7 +88,45 @@ class CustomerProductSearchCommand(sublime_plugin.WindowCommand):
                     for customer_account in customer_accounts:
                        self.add_customer_result(customer_account, key)
                     search_results.append(customer_accounts)
-        self.prepare_results(search_results)
+        self.prepare_results(search_results, count)
+
+    def user_with_not_products(self, not_products_array, dictionary):
+        user = []
+        for not_product in not_products_array:
+            for key , value in dictionary.items():
+                if not_product.upper() in key:
+                    user.append(value)
+        if user != []:
+            return functools.reduce(lambda x, y: x+y, user)
+        else:
+            return []
+
+    def get_input_values(self, search_string_array):
+        not_products_array = []
+        next_value_is_not_product = False
+        for (counter, search_value) in enumerate(search_string_array):
+            if not search_value.strip():
+                continue
+            if next_value_is_not_product is True:
+                not_products_array.append(search_value)
+            next_value_is_not_product = False
+            if search_value.upper() == "NOT":
+                next_value_is_not_product = True
+        for i in not_products_array: search_string_array.remove(i)
+        if "NOT" in search_string_array: search_string_array.remove("NOT")
+        if "not" in search_string_array: search_string_array.remove("not")
+        return  list(search_string_array), not_products_array
+
+    def search(self, dictionary, substr, user_with_not_products_array):
+        result = {}
+        for key , value in dictionary.items():
+            if substr in key:
+                for i in user_with_not_products_array:
+                    if i in value:
+                        value.remove(i)
+                if value:
+                    result [key] = value
+        return result
 
     def add_customer_result(self, customer_account, key):
         if self.customer_products.get(customer_account,''):
@@ -128,7 +135,7 @@ class CustomerProductSearchCommand(sublime_plugin.WindowCommand):
         else:
             self.customer_products[customer_account] = key
 
-    def prepare_results(self, search_results):
+    def prepare_results(self, search_results, count):
         #reduce(lambda x,y: x+y, [[1],[2],[3],[4]])
         #[1, 2, 3, 4]
         results = {}
@@ -137,12 +144,19 @@ class CustomerProductSearchCommand(sublime_plugin.WindowCommand):
             results_dict = {}
             for result in flatten_results:
                 results_dict[result] = flatten_results.count(result)
-            results = Counter(results_dict).most_common(20)
+            results = Counter(results_dict).most_common(count)
         self.show_results(results)
 
-    def on_cancel(self):
+    def show_results(self, results):
+        # Enumerate liefert einen Counter
+        self.output_view.window().run_command("hide_panel")
+        if not (results):
+            self.output_view.window().run_command("append", {"characters" : "Leider keine Ergebnisse gefunden."})
+        for (counter, result) in enumerate(results):
+          # Ergebnis Anzeige
+          ergebnis = "n" + str(result[0]) + "@wsct.eu | Treffer:" + str(result[1]) + "(" + self.customer_products[str(result[0])] + ")\n"
+          self.output_view.window().run_command("append", {"characters" : ergebnis})
         self.save_view()
-        self.output_view.window().run_command('close')
 
 
 from operator import itemgetter

@@ -21,6 +21,7 @@
   - and --> searches for a user with all the provided products
   - not --> searches for a user without the provided product
   - you can combine both of them ;)
+  - Specify how many results you want with | XYZ (default is 20)
 
 Enter the wanted product and hit enter, the window will auto refresh and save the file automatically.
 
@@ -29,7 +30,8 @@ Enter the wanted product and hit enter, the window will auto refresh and save th
 - 3play and vassecure
 - 3play and basic not basic_hd
 - 3PLAY100 AND BASIC
-- 2PLAY
+- 2PLAY | 3
+- 2PLAY50 AND BASIC | 50
 
 ## Issues? Comments? PR? Support?
 Just create an issue here and I'll take a look at it and try my best to help you out! :)
