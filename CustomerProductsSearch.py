@@ -8,7 +8,6 @@ import os
 import copy
 import functools
 
-SEARCHFILE = sublime.packages_path() + os.path.sep + "User" + os.path.sep + "customer_product_search.tmp"
 CUSTOMER_PRODUCT_HASH_FILE = os.path.sep + "db" + os.path.sep + "customer_product_hash.json"
 
 class CustomerProductSearchCommand(sublime_plugin.WindowCommand):
@@ -17,11 +16,13 @@ class CustomerProductSearchCommand(sublime_plugin.WindowCommand):
     user_with_not_products_array = []
 
     def run(self):
+        # plugin_loaded funktioniert irgendwie nicht...
+        SEARCHFILE = sublime.packages_path() + os.path.sep + "User" + os.path.sep + "customer_product_search.tmp"
         customer_product_hash_file = ""
         # Suche die json Datei
         for folder in self.window.folders():
-            if os.path.exists(folder+CUSTOMER_PRODUCT_HASH_FILE):
-                customer_product_hash_file = folder+CUSTOMER_PRODUCT_HASH_FILE
+            if os.path.exists(folder + CUSTOMER_PRODUCT_HASH_FILE):
+                customer_product_hash_file = folder + CUSTOMER_PRODUCT_HASH_FILE
             # Zweiter Fall, wir sind im root folder
             if os.path.exists(folder + os.path.sep + "ume-selfcare" + CUSTOMER_PRODUCT_HASH_FILE):
                  customer_product_hash_file = folder + os.path.sep + "ume-selfcare" + CUSTOMER_PRODUCT_HASH_FILE
