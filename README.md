@@ -22,6 +22,7 @@
   - not --> searches for a user without the provided product
   - you can combine both of them ;)
   - Specify how many results you want with | XYZ (default is 20)
+  - a b or n is prefixed automatically based on the region
 
 Enter the wanted product and hit enter, the window will auto refresh and save the file automatically.
 

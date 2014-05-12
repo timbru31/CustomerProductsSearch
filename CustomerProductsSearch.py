@@ -155,7 +155,10 @@ class CustomerProductSearchCommand(sublime_plugin.WindowCommand):
             self.output_view.window().run_command("append", {"characters" : "Leider keine Ergebnisse gefunden."})
         for (counter, result) in enumerate(results):
           # Ergebnis Anzeige
-          ergebnis = "n" + str(result[0]) + "@wsct.eu | Treffer:" + str(result[1]) + "(" + self.customer_products[str(result[0])] + ")\n"
+          prefix = "n"
+          if (str(result[0]).startswith("9")):
+            prefix = "b"
+          ergebnis = prefix + str(result[0]) + "@umpost.de | Treffer:" + str(result[1]) + "(" + self.customer_products[str(result[0])] + ")\n"
           self.output_view.window().run_command("append", {"characters" : ergebnis})
         self.save_view()
 

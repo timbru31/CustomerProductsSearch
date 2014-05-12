@@ -1,3 +1,4 @@
-[
-  { "keys": ["super+k", "super+x"], "command": "customer_product_search" }
-]
+[{
+    "keys": ["super+k", "super+x"],
+    "command": "customer_product_search"
+}]
