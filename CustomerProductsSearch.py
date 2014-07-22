@@ -23,10 +23,12 @@ class CustomerProductSearchCommand(sublime_plugin.WindowCommand):
         for folder in self.window.folders():
             if os.path.exists(folder + CUSTOMER_PRODUCT_HASH_FILE):
                 customer_product_hash_file = folder + CUSTOMER_PRODUCT_HASH_FILE
-            # Zweiter Fall, wir sind im root folder
-            if os.path.exists(folder + os.path.sep + "ume-selfcare" + CUSTOMER_PRODUCT_HASH_FILE):
-                 customer_product_hash_file = folder + os.path.sep + "ume-selfcare" + CUSTOMER_PRODUCT_HASH_FILE
-        if (customer_product_hash_file == ""):
+            else:
+                settings = sublime.load_settings("CustomerProductsSearch.sublime-settings")
+                custom_file = settings.get('customer_product_hash_file')
+                if custom_file:
+                    customer_product_hash_file = custom_file
+        if not os.path.isfile(customer_product_hash_file):
             # Fehler beim öffnen der json Datei
             sublime.error_message('Fehler beim Öffnen von "db/customer_product_hash.json"\n\nSelfcare Rake Task\nrake db:import:build_customer_products_hash\n\nbenutzen um eine neue Datei zu erzeugen.')
         else:
@@ -116,7 +118,7 @@ class CustomerProductSearchCommand(sublime_plugin.WindowCommand):
         for i in not_products_array: search_string_array.remove(i)
         if "NOT" in search_string_array: search_string_array.remove("NOT")
         if "not" in search_string_array: search_string_array.remove("not")
-        return  list(search_string_array), not_products_array
+        return list(search_string_array), not_products_array
 
     def search(self, dictionary, substr, user_with_not_products_array):
         result = {}
@@ -225,7 +227,7 @@ class Counter(dict):
     @classmethod
     def fromkeys(cls, iterable, v=None):
         raise NotImplementedError(
-            'Counter.fromkeys() is undefined.  Use Counter(iterable) instead.')
+            'Counter.fromkeys() is undefined. Use Counter(iterable) instead.')
 
     def update(self, iterable=None, **kwds):
         '''Like dict.update() but add counts instead of replacing them.

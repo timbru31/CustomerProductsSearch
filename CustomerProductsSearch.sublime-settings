@@ -1,0 +1,7 @@
+{
+  // Define the file for the product_hash here
+  // default is current folder root
+  // please specify an absoulte path here
+  // This location is only used when the automatic detection fails
+  "customer_product_hash_file": ""
+}

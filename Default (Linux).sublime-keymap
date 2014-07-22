@@ -1,4 +1,6 @@
-[{
+[
+  {
     "keys": ["ctrl+k", "ctrl+x"],
     "command": "customer_product_search"
-}]
+  }
+]
